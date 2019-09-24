@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 // var Graph = require('react-graph-vis');
 import Graph from 'react-graph-vis';
+import Stats from './stats/Stats';
 
 let ns = [];
 let es = [];
@@ -182,12 +183,18 @@ class App extends React.Component {
         netw.fit();
     }
     render() {
-        return <div className="Full">
+        return <div className={["row"]}>
+            <div className={"col-sm-3"}>
             <button onClick={this.physicsButtonClicked}>Physics: {this.state.options.physics}</button>
+            <Stats totalNodes={this.state.graph.nodes.length}></Stats>
+                </div>
+            <div className={"col-sm-9"}>
             <Graph graph={this.state.graph} options={this.state.options} events={this.state.events} getNetwork={network=>{
                 netw = network;
             }}/>
-        </div>;
+            </div>
+        </div>
+            ;
     }
 
 }
