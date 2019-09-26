@@ -4,6 +4,8 @@ import './App.css';
 // var Graph = require('react-graph-vis');
 import Graph from 'react-graph-vis';
 import Stats from './stats/Stats';
+import LinkChangeMonitor from "./monitor/LinkChangeMonitor";
+import NodeTable from "./node table/NodeTable";
 
 let ns = [];
 let es = [];
@@ -58,8 +60,6 @@ var options = {
     interaction:{
       navigationButtons:true
     },
-    height: '100%',
-    width: '100%',
     autoResize: true,
     physics: false
 };
@@ -75,7 +75,7 @@ var events = {
 class App extends React.Component {
     constructor() {
         super(null);
-        this.state = {graph: graph, options: options, events: events};
+        this.state = {graph: graph, options: options, events: events, link_changes:[],nodes:[],lastSearch:{}};
         this.onClick = this.onClick.bind(this);
         this.updateNodes = this.updateNodes.bind(this);
         this.fetchData = this.fetchData.bind(this);
@@ -122,8 +122,8 @@ class App extends React.Component {
                 id: n.id,
                 color: this.colorForNode(n.id, lastSearch),
                 label: n.id,
-                x: parseFloat(n.id.split(",")[0]) *(this.state.options.physics?1:10) ,
-                y: parseFloat(n.id.split(",")[1]) * (this.state.options.physics?1:10)
+                x: parseFloat(n.id.split(",")[0]) *(this.state.options.physics?10:10) ,
+                y: parseFloat(n.id.split(",")[1]) * (this.state.options.physics?10:10)
             });
             let ns = n["neighbors"];
             console.info("here");
@@ -136,7 +136,7 @@ class App extends React.Component {
         }
         console.info(edges);
         let newGraph = {nodes, edges};
-        this.setState({graph: newGraph, events: events});
+        this.setState({graph: newGraph, events: events,nodes:newNodes,lastSearch});
     }
 
     componentDidMount() {
@@ -145,7 +145,7 @@ class App extends React.Component {
 
     fetchData() {
         let self = this;
-        fetch('http://localhost:3500/stats/get_nodes')
+        fetch('http://localhost:3500/stats/get_node_stats')
             .then(function (response) {
                 console.info(response);
                 return response.json();
@@ -160,6 +160,27 @@ class App extends React.Component {
                         self.updateNodes(nodes, lastSearch);
                     });
             });
+
+        fetch('http://localhost:3500/stats/link_changes').then((value => {
+            value.json().then((value1 => {
+                console.info(value1);
+                value1 = value1.map((val, index) => {
+                    if (index >= 2) {
+                        return (value1[index - 2] + value1[index - 1] + value1[index]) / 3;
+                    }else{
+                        return val;
+                    }
+                });
+                value1 = value1.map((val, index) => {
+                    return {x: index, y: val};
+                });
+                this.setState({link_changes: value1});
+            }));
+
+        }), (reason => {
+
+        }));
+
         setTimeout(this.fetchData, 4000);
     }
 
@@ -183,15 +204,35 @@ class App extends React.Component {
         netw.fit();
     }
     render() {
-        return <div className={["row"]}>
-            <div className={"col-sm-3"}>
-            <button onClick={this.physicsButtonClicked}>Physics: {this.state.options.physics}</button>
-            <Stats totalNodes={this.state.graph.nodes.length}></Stats>
+        return <div className={"container"}>
+            <div className={"row"}>
+                <div className={"col-sm-3"}>
+
+                    <button onClick={this.physicsButtonClicked}>Physics: {this.state.options.physics}</button>
+                    <LinkChangeMonitor data={this.state.link_changes}></LinkChangeMonitor>
+                    <Stats totalNodes={this.state.graph.nodes.length}></Stats>
                 </div>
-            <div className={"col-sm-9"}>
-            <Graph graph={this.state.graph} options={this.state.options} events={this.state.events} getNetwork={network=>{
-                netw = network;
-            }}/>
+                <div className={"col-sm-9"}>
+                    <Graph graph={this.state.graph} options={this.state.options} events={this.state.events}
+                           getNetwork={network => {
+                               netw = network;
+                           }}/>
+                </div>
+            </div>
+            <div className={"row"}>
+                <div className={"col-6"}>
+                    <p><b>Query:</b> {this.state.lastSearch.query}</p>
+                    <p><b>Search ID:</b> {this.state.lastSearch.id}</p>
+                    {
+                        this.state.lastSearch.stats &&
+                        this.state.lastSearch.stats.map((value) => {
+                            return (<p>name: {value.name} action: {value.action} {value.target_name && "target: "+value.target_name}</p>)
+                        })
+                    }
+                </div>
+                <div className={"col-6 "}>
+                    <NodeTable nodes={this.state.nodes}></NodeTable>
+                </div>
             </div>
         </div>
             ;

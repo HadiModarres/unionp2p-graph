@@ -10,6 +10,12 @@
 .row{
   height: 100%;
 }
+.red-bg{
+  background-color: red;
+}
+.blue-bg{
+  background-color: deepskyblue;
+}
 html, body{
   width: 100%;
   height: 100%;
