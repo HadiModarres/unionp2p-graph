@@ -7,7 +7,7 @@ class NodeTable extends React.Component{
    }
    render() {
       return (
-          <table className={"table"}>
+          <table className={"table table-striped"}>
              <tr>
                 <th>
                    Node
@@ -26,6 +26,8 @@ class NodeTable extends React.Component{
                 </th>
              </tr>
              {
+                <tbody>
+                {
                 this.props.nodes.map((value) => {
                    return (
                        <tr>
@@ -47,6 +49,8 @@ class NodeTable extends React.Component{
                        </tr>
                    )
                 })
+                }
+                </tbody>
              }
           </table>
       );

@@ -205,11 +205,12 @@ class App extends React.Component {
         netw.fit();
     }
     render() {
+        let physicsEnabled = this.state.options.physics? "On":"Off";
         return <div className={"dash-container"}>
             <div className={"row"}>
                 <div className={"col-sm-3 card-2"}>
 
-                    <button onClick={this.physicsButtonClicked}>Physics: {this.state.options.physics}</button>
+                    <button className={"btn btn-info"} onClick={this.physicsButtonClicked}>Physics: {physicsEnabled}</button>
                     <LinkChangeMonitor data={this.state.link_changes}></LinkChangeMonitor>
                     <Stats totalNodes={this.state.graph.nodes.length}></Stats>
                 </div>
