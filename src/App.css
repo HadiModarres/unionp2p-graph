@@ -5,7 +5,7 @@
 .Full{
   height: 100%;
   width: 100%;
-  background-color: white;
+  background-color: #f2f2f2;
 }
 .row{
   height: 100%;
@@ -49,3 +49,27 @@ html, body{
     transform: rotate(360deg);
   }
 }
+
+.blue-border{
+  border: deepskyblue dashed thin;
+}
+
+.red-border{
+  border: red dashed thick;
+}
+
+.dash-container{
+  width: 80%;
+  margin: auto;
+}
+
+.card-3 {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.card-2 {
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    background-color: white;
+  margin: 15px;
+}
+

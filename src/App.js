@@ -60,6 +60,7 @@ var options = {
     interaction:{
       navigationButtons:true
     },
+    height:"700px",
     autoResize: true,
     physics: false
 };
@@ -204,15 +205,15 @@ class App extends React.Component {
         netw.fit();
     }
     render() {
-        return <div className={"container"}>
+        return <div className={"dash-container"}>
             <div className={"row"}>
-                <div className={"col-sm-3"}>
+                <div className={"col-sm-3 card-2"}>
 
                     <button onClick={this.physicsButtonClicked}>Physics: {this.state.options.physics}</button>
                     <LinkChangeMonitor data={this.state.link_changes}></LinkChangeMonitor>
                     <Stats totalNodes={this.state.graph.nodes.length}></Stats>
                 </div>
-                <div className={"col-sm-9"}>
+                <div className={"col-sm-8 card-2"}>
                     <Graph graph={this.state.graph} options={this.state.options} events={this.state.events}
                            getNetwork={network => {
                                netw = network;
@@ -220,7 +221,7 @@ class App extends React.Component {
                 </div>
             </div>
             <div className={"row"}>
-                <div className={"col-6"}>
+                <div className={"col-5 card-2"}>
                     <p><b>Query:</b> {this.state.lastSearch.query}</p>
                     <p><b>Search ID:</b> {this.state.lastSearch.id}</p>
                     {
@@ -230,11 +231,12 @@ class App extends React.Component {
                         })
                     }
                 </div>
-                <div className={"col-6 "}>
+                <div className={"col-6 card-2"}>
                     <NodeTable nodes={this.state.nodes}></NodeTable>
                 </div>
             </div>
         </div>
+
             ;
     }
 

@@ -9,8 +9,8 @@ class LinkChangeMonitor extends React.Component{
         return (
             <div>
                 <XYPlot
-                    width={100}
-                    height={100}>
+                    width={350}
+                    height={200}>
                     <HorizontalGridLines />
                     <LineSeries
                         data={this.props.data}/>
