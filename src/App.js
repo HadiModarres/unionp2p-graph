@@ -7,6 +7,8 @@ import Stats from './stats/Stats';
 import LinkChangeMonitor from "./monitor/LinkChangeMonitor";
 import NodeTable from "./node table/NodeTable";
 
+const fs = require('fs');
+
 let ns = [];
 let es = [];
 for (let x = 0; x < 15; x++) {
@@ -76,12 +78,36 @@ var events = {
 class App extends React.Component {
     constructor() {
         super(null);
-        this.state = {graph: graph, options: options, events: events, link_changes:[],nodes:[],lastSearch:{}};
+        this.state = {graph: graph, options: options, events: events, link_changes:[],nodes:[],
+            lastSearch:{}, export: undefined, liveData: true};
         this.onClick = this.onClick.bind(this);
         this.updateNodes = this.updateNodes.bind(this);
         this.fetchData = this.fetchData.bind(this);
         this.physicsButtonClicked = this.physicsButtonClicked.bind(this);
+        this.import = this.import.bind(this);
+        this.export = this.export.bind(this);
+        this.liveDataButtonClicked = this.liveDataButtonClicked.bind(this);
+        // this.timerID= undefined;
     }
+
+    import(ev){
+        let files = ev.target.files;
+        let fileReader = new FileReader();
+        fileReader.onload = (ev) => {
+            let st = JSON.parse(ev.target.result);
+            st.liveData = false;
+            // clearTimeout(this.timerID);
+            this.setState(st);
+        };
+        fileReader.readAsText(files[0]);
+    }
+    export() {
+        let toExport = Object.assign({}, this.state);
+        delete toExport.liveData;
+        let st = JSON.stringify(toExport);
+        var data = new Blob([st], {type: 'text/plain'});
+        this.setState({export:window.URL.createObjectURL(data)});
+    };
 
     colorForNode(name, lastSearch) {
 
@@ -114,6 +140,9 @@ class App extends React.Component {
     }
 
     updateNodes(newNodes, lastSearch) {
+        if (!this.state.liveData) {
+            return;
+        }
         // console.info("new nodes");
         console.info(newNodes);
         let nodes = [];
@@ -145,6 +174,10 @@ class App extends React.Component {
     }
 
     fetchData() {
+        if (!this.state.liveData){
+            setTimeout(this.fetchData, 300);
+            return;
+        }
         let self = this;
         fetch('http://localhost:3500/stats/get_node_stats')
             .then(function (response) {
@@ -193,6 +226,16 @@ class App extends React.Component {
         this.setState({graph: graph2});
     }
 
+    liveDataButtonClicked(){
+       this.setState((prevState)=>{
+           if (!prevState.liveData)
+           this.fetchData();
+           return {
+               liveData: !prevState.liveData
+           }
+       });
+    }
+
     physicsButtonClicked(){
         let newOps = {};
         Object.assign(newOps, this.state.options);
@@ -206,11 +249,15 @@ class App extends React.Component {
     }
     render() {
         let physicsEnabled = this.state.options.physics? "On":"Off";
+        let liveDataEnabled = this.state.liveData? "On":"Off";
         return <div className={"dash-container"}>
             <div className={"row"}>
                 <div className={"col-sm-3 card-2"}>
-
+                    <input onChange={this.import} type="file"/>
+                    <button onClick={this.export}>Export</button>
+                    {this.state.export && <a href={this.state.export} download>Download</a>}
                     <button className={"btn btn-info"} onClick={this.physicsButtonClicked}>Physics: {physicsEnabled}</button>
+                    <button className={"btn btn-info"} onClick={this.liveDataButtonClicked}>Live Data: {liveDataEnabled}</button>
                     <LinkChangeMonitor data={this.state.link_changes}></LinkChangeMonitor>
                     <Stats totalNodes={this.state.graph.nodes.length}></Stats>
                 </div>
