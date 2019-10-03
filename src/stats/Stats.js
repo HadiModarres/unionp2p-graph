@@ -6,7 +6,7 @@ class Stats extends React.Component{
         super(props);
     }
     render() {
-        return (<div className={'stats-container'}>
+        return (<div className={'my-3 p-4 stats-container'}>
             <div>Total Nodes: {this.props.totalNodes}</div>
         </div>);
     }

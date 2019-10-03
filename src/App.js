@@ -253,12 +253,18 @@ class App extends React.Component {
         return <div className={"dash-container"}>
             <div className={"row"}>
                 <div className={"col-sm-3 card-2"}>
+                    <br/>
                     <input onChange={this.import} type="file"/>
-                    <button onClick={this.export}>Export</button>
+                        <br/>
+                        <br/>
+                    <button className={"btn btn-info"} onClick={this.export}>Export</button>
                     {this.state.export && <a href={this.state.export} download>Download</a>}
-                    <button className={"btn btn-info"} onClick={this.physicsButtonClicked}>Physics: {physicsEnabled}</button>
-                    <button className={"btn btn-info"} onClick={this.liveDataButtonClicked}>Live Data: {liveDataEnabled}</button>
-                    <LinkChangeMonitor data={this.state.link_changes}></LinkChangeMonitor>
+                    <br/>
+                    <br/>
+                    <button className={"btn btn-secondary"} onClick={this.physicsButtonClicked}>Physics: {physicsEnabled}</button>
+                    <br/>
+                    <br/>
+                    <button className={"btn btn-secondary"} onClick={this.liveDataButtonClicked}>Live Data: {liveDataEnabled}</button>
                     <Stats totalNodes={this.state.graph.nodes.length}></Stats>
                 </div>
                 <div className={"col-sm-8 card-2"}>
@@ -268,14 +274,18 @@ class App extends React.Component {
                            }}/>
                 </div>
             </div>
+            <div className={"row justify-content-center card-2"}>
+                <LinkChangeMonitor data={this.state.link_changes}></LinkChangeMonitor>
+            </div>
             <div className={"row"}>
                 <div className={"col-5 card-2"}>
+                    <h3 className={"navbar-brand mb-4"}>Last Search Stats</h3>
                     <p><b>Query:</b> {this.state.lastSearch.query}</p>
                     <p><b>Search ID:</b> {this.state.lastSearch.id}</p>
                     {
                         this.state.lastSearch.stats &&
                         this.state.lastSearch.stats.map((value) => {
-                            return (<p>name: {value.name} action: {value.action} {value.target_name && "target: "+value.target_name}</p>)
+                            return (<p><span style={{"color":"#17a2b8","font-size":24+"px"}}>{value.action}</span> node: {value.name}  {value.target_name && "target node: "+value.target_name}</p>)
                         })
                     }
                 </div>
